@@ -108,8 +108,8 @@ wtss.prototype.time_series = function(options, f) {
                   "&latitude=" + options.latitude;
 
   if(options.start && options.end) {
-    query_str += "&start=" + options.start.toString();
-    query_str += "&end=" + options.end.toString();
+    query_str += "&start_date=" + options.start_date.toString();
+    query_str += "&end_date=" + options.end_date.toString();
   }
 
   wtss_get_json(query_str, f);
