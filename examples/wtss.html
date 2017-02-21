@@ -8,11 +8,19 @@
         color:white;
         text-align:left;
         padding:1px;
-        width:auto;
-        float:left;
+        width:100%;
       }
-      #coverage_metadata {
+      #timeseries_chart {
+		width: 100%;
+		height: 400px;
+		display: block;
       }
+      textarea {
+		border:1px solid #999999;
+		width:100%;
+		margin:5px 0;
+		padding:3px;
+	  }
     </style>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="../src/wtss.js"></script>
@@ -44,21 +52,21 @@
       function fill_coverage_metadata(cv_meta) {
         var coverage_metadata_text = document.getElementById('coverage_metadata_text');
 
-        coverage_metadata_text.innerHTML = JSON.stringify(cv_meta);
+        coverage_metadata_text.innerHTML = JSON.stringify(cv_meta, undefined, 2);
 
         coverage_meta = cv_meta;
 
         var ts_start_text = document.getElementById('ts_start_text');
         var ts_start_end = document.getElementById('ts_end_text');
 
-        ts_start_text.value = cv_meta.geo_extent.temporal.start;
-        ts_end_text.value = cv_meta.geo_extent.temporal.end;
+        ts_start_text.value = cv_meta.time_line[0];
+        ts_end_text.value = cv_meta.time_line[cv_meta.time_line.length-1];
       }
 
       function fill_time_series(ts) {
         var time_series_text = document.getElementById('time_series_text');
 
-        time_series_text.innerHTML = JSON.stringify(ts);
+        time_series_text.innerHTML = JSON.stringify(ts, undefined, 2);
 
         chart = new tschart("timeseries_chart");
 
@@ -87,8 +95,8 @@
 
         var latitude = document.getElementById('ts_latitude_text').value;
         var longitude = document.getElementById('ts_longitude_text').value;
-        var start = document.getElementById('ts_start_text').value;
-        var end = document.getElementById('ts_end_text').value;
+        var start_date = document.getElementById('ts_start_text').value;
+        var end_date = document.getElementById('ts_end_text').value;
 
         var cv_attributes = [];
 
@@ -97,12 +105,12 @@
         }
 
         wtss_server.time_series( {
-          "coverage": coverage_meta.name,
+          "coverage": coverage_meta.cluster_id+":"+coverage_meta.name,
           "attributes": cv_attributes,
           "longitude": longitude,
           "latitude": latitude,
-          "start": start,
-          "end": end}, fill_time_series
+          "start_date": start_date,
+          "end_date": end_date}, fill_time_series
         );
       }
   
@@ -110,11 +118,11 @@
   </head>
 
   <body>
-    <div id="wtss_server_info" width="250">
+    <div id="wtss_server_info">
       <fieldset>
         <legend>Web Time Series Server</legend>
         URI:<br>
-        <input type="url" id="wtss_server_uri" value ="../unittest" required="true">
+        <input type="url" id="wtss_server_uri" value ="http://localhost:7653" required="true">
         <input type="button" name="connect_wtss_server_button" onclick="on_connect_wtss_server_button_clicked()" value="Go"><br>
 
         <fieldset>
@@ -124,7 +132,7 @@
             <fieldset>
               <legend>Coverage Metadata:</legend>
               <div id="coverage_metadata_div">
-              <textarea id="coverage_metadata_text" type="text" readOnly="True" rows="5" cols="95" style="resize:none"></textarea>
+              <textarea id="coverage_metadata_text" rows="5" cols="2" style="resize:vertical"></textarea>
               </div>
             </fieldset>
           </div>
@@ -140,13 +148,13 @@
           <fieldset>
           <legend>Time Series:</legend>
           <div id="timeseries_data">
-          <textarea id="time_series_text" type="text" readOnly="True" rows="5" cols="95" style="resize:none"></textarea>
+          <textarea id="time_series_text" rows="5" cols="2" style="resize:vertical"></textarea>
           </div>
           </fieldset>
         </fieldset>
       </fieldset>
     </div>
-    <div id="timeseries_chart" style="clear:both; width:1200px; height:500px">
+    <div id="timeseries_chart">
     </div>
   </body>
 </html>
